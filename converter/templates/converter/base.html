@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}JSON Converter - Old → New Format{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'converter/css/style.css' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-title">
+                <i class="fas fa-exchange-alt"></i>
+                Pixelmon JSON Converter
+            </h1>
+            <ul class="nav-menu">
+                <li><a href="{% url 'converter:index' %}" class="nav-link">Home</a></li>
+                <li><a href="{% url 'converter:help' %}" class="nav-link">Help</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 JSON Converter. Convert JSON files from OLD to NEW format with strict key ordering, predicate wrappers, palette tags, and default growth data.</p>
+        </div>
+    </footer>
+
+    <script src="{% static 'converter/js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,210 @@
+{% extends 'converter/base.html' %}
+
+{% block title %}Help - JSON Converter{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="help-section">
+  <h1 class="help-title">Help - JSON Converter</h1>
+        
+        <div class="help-content">
+      <section class="help-item">
+        <h2><i class="fas fa-question-circle"></i> What does this converter do?</h2>
+        <p>
+          This converter transforms JSON files from the OLD (deprecated) format to the NEW format with the following features:
+        </p>
+        <ul>
+          <li><strong>Strict key ordering:</strong> JSON keys are reorganized into a predefined specific order</li>
+          <li><strong>Predicate wrapper:</strong> Models are wrapped with predicates like "pixelmon:always"</li>
+          <li><strong>Palette tags:</strong> Ensures all palettes have their corresponding tags</li>
+          <li><strong>Default growth data:</strong> Growth data is automatically added at the end of each form</li>
+        </ul>
+      </section>
+
+      <section class="help-item">
+        <h2><i class="fas fa-file-code"></i> Single file conversion</h2>
+                <div class="help-steps">
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        <div class="step-content">
+              <h4>Select file</h4>
+              <p>Click "Select JSON file" and choose your .json file in OLD format.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        <div class="step-content">
+              <h4>Convert</h4>
+              <p>Click "Convert File" and the system will process your file.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        <div class="step-content">
+              <h4>Download</h4>
+              <p>The converted file will be downloaded automatically with the suffix "_new.json".</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+      <section class="help-item">
+        <h2><i class="fas fa-file-archive"></i> Batch conversion (ZIP)</h2>
+                <div class="help-steps">
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        <div class="step-content">
+              <h4>Prepare ZIP</h4>
+              <p>Create a ZIP file that contains all the .json files you want to convert.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        <div class="step-content">
+              <h4>Upload and convert</h4>
+              <p>Select the ZIP file and click "Convert ZIP".</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        <div class="step-content">
+              <h4>Download result</h4>
+              <p>A new ZIP will be downloaded with all converted files suffixed with "_new.json".</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+      <section class="help-item">
+        <h2><i class="fas fa-edit"></i> Text conversion</h2>
+                <div class="help-steps">
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        <div class="step-content">
+              <h4>Paste JSON</h4>
+              <p>Copy and paste your OLD-format JSON into the left text area.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        <div class="step-content">
+              <h4>Convert</h4>
+              <p>Click "Convert" and the converted JSON will appear in the right area.</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        <div class="step-content">
+              <h4>Download or copy</h4>
+              <p>You can copy the converted text or download it as a file using the "Download JSON" button.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+      <section class="help-item">
+        <h2><i class="fas fa-code"></i> Conversion example</h2>
+                <div class="code-example">
+          <h4>OLD format (before):</h4>
+                    <pre><code>{
+  "name": "Pikachu",
+  "forms": [
+    {
+      "name": "base",
+      "genderProperties": [
+        {
+          "gender": "male",
+          "palettes": [
+            {
+              "name": "none",
+              "texture": "pixelmon/textures/pokemon/pikachu.png",
+              "modelLocator": {
+                "pqc": ["models/pokemon/pikachu.pqc"]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}</code></pre>
+                </div>
+                
+                <div class="code-example">
+                    <h4>NEW format (after):</h4>
+                    <pre><code>{
+  "name": "Pikachu",
+  "dex": 25,
+  "defaultForms": ["base"],
+  "forms": [
+    {
+      "name": "base",
+      "genderProperties": [
+        {
+          "gender": "male",
+          "palettes": [
+            {
+              "name": "none",
+              "models": [
+                {
+                  "model_predicate": {
+                    "type": "pixelmon:always"
+                  },
+                  "models": [
+                    {
+                      "texture": "pixelmon/textures/pokemon/pikachu.png",
+                      "model": "models/pokemon/pikachu.bmd",
+                      "animations": [
+                        {
+                          "type": "idle",
+                          "animation": "models/pokemon/idle.bmd"
+                        },
+                        {
+                          "type": "walk",
+                          "animation": "models/pokemon/walk.bmd"
+                        }
+                      ],
+                      "scale": 1.0
+                    }
+                  ]
+                }
+              ],
+              "tags": []
+            }
+          ]
+        }
+      ],
+      "growth_data": {
+        "mean": 40.0,
+        "standard_deviation": 2.0,
+        "min_render_scale": 0.7,
+        "max_render_scale": 1.3
+      }
+    }
+  ]
+}</code></pre>
+                </div>
+            </section>
+
+            <section class="help-item">
+        <h2><i class="fas fa-exclamation-triangle"></i> Limitations and considerations</h2>
+        <ul>
+          <li>Files must be valid JSON</li>
+          <li>ZIP files must not exceed 10MB</li>
+          <li>Only .json files inside the ZIP are processed</li>
+          <li>Files already suffixed with "_new.json" will be ignored during ZIP conversions</li>
+          <li>The conversion preserves the original structure but reorganizes keys according to the NEW format</li>
+        </ul>
+            </section>
+
+      <section class="help-item">
+        <h2><i class="fas fa-life-ring"></i> Support</h2>
+        <p>
+          If you encounter an issue or have suggestions, check the activity log on the main page
+          for detailed information about any errors that may occur during conversion.
+        </p>
+      </section>
+        </div>
+    </div>
+</div>
+{% endblock %}

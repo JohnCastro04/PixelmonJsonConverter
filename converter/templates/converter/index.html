@@ -1,0 +1,411 @@
+{% extends 'converter/base.html' %} {% block content %}
+<div class="container">
+  <div class="hero-section">
+    <h1 class="hero-title">JSON Converter: OLD → NEW</h1>
+    <h2 class="hero-title">1.16.5 → 1.21.1</h2>
+    <p class="hero-description">
+      Convert JSON files from the old format to the new one with strict key
+      ordering, predicate wrapper, palette tags, and always append default
+      growth data at the end of each form.
+    </p>
+  </div>
+
+  <div class="converter-methods">
+    <!-- Method 1: Single file -->
+    <div class="method-card">
+      <div class="method-header">
+        <i class="fas fa-file-code"></i>
+        <h3>Convert a File</h3>
+      </div>
+      <div class="method-content">
+        <p>
+          Select a single JSON file to convert from the old format to the new
+          format.
+        </p>
+        <form id="single-file-form" enctype="multipart/form-data">
+          <div class="file-input-wrapper">
+            <input
+              type="file"
+              id="json-file"
+              name="json_file"
+              accept=".json"
+              required
+            />
+            <label for="json-file" class="file-input-label">
+              <i class="fas fa-upload"></i>
+              Select JSON file
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-convert"></i>
+            Convert File
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Method 2: ZIP folder -->
+    <div class="method-card">
+      <div class="method-header">
+        <i class="fas fa-file-archive"></i>
+        <h3>Convert Folder (ZIP)</h3>
+      </div>
+      <div class="method-content">
+        <p>
+          Upload a ZIP file containing multiple JSON files for batch conversion.
+        </p>
+        <form id="zip-file-form" enctype="multipart/form-data">
+          <div class="file-input-wrapper">
+            <input
+              type="file"
+              id="zip-file"
+              name="zip_file"
+              accept=".zip"
+              required
+            />
+            <label for="zip-file" class="file-input-label">
+              <i class="fas fa-upload"></i>
+              Select ZIP file
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-convert"></i>
+            Convert ZIP
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Method 3: Text input -->
+    <div class="method-card full-width">
+      <div class="method-header">
+        <i class="fas fa-edit"></i>
+        <h3>Convert from Text</h3>
+      </div>
+      <div class="method-content">
+        <p>
+          Paste your JSON directly into the text area to convert it instantly.
+        </p>
+        <div class="text-converter">
+          <div class="text-input-section">
+            <label for="json-input">Original JSON (OLD format):</label>
+            <textarea
+              id="json-input"
+              placeholder="Paste your old-format JSON here..."
+              rows="10"
+            ></textarea>
+          </div>
+          <div class="text-buttons">
+            <button id="convert-text-btn" class="btn btn-primary">
+              <i class="fas fa-arrow-right"></i>
+              Convert
+            </button>
+            <button id="clear-text-btn" class="btn btn-secondary">
+              <i class="fas fa-trash"></i>
+              Clear
+            </button>
+          </div>
+          <div class="text-output-section">
+            <label for="json-output">Converted JSON (NEW format):</label>
+            <textarea
+              id="json-output"
+              readonly
+              placeholder="The converted JSON will appear here..."
+              rows="10"
+            ></textarea>
+            <button
+              id="download-text-btn"
+              class="btn btn-success"
+              style="display: none"
+            >
+              <i class="fas fa-download"></i>
+              Download JSON
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Activity log -->
+  <div class="log-section">
+    <h3><i class="fas fa-list"></i> Activity Log</h3>
+    <div id="activity-log" class="log-container">
+      <p class="log-entry info">
+        Welcome to the JSON Converter. Select a conversion method to get
+        started.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Progress modal -->
+<div id="progress-modal" class="modal">
+  <div class="modal-content">
+    <div class="progress-content">
+      <i class="fas fa-spinner fa-spin"></i>
+      <h3>Processing...</h3>
+      <p id="progress-text">Converting JSON file...</p>
+    </div>
+  </div>
+</div>
+{% endblock %} {% block extra_js %}
+<script>
+  // Get CSRF token
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  const csrftoken = getCookie("csrftoken");
+
+  // Log functions
+  function logMessage(message, type = "info") {
+    const log = document.getElementById("activity-log");
+    const entry = document.createElement("p");
+    entry.className = `log-entry ${type}`;
+    entry.innerHTML = `<i class="fas fa-${
+      type === "error"
+        ? "exclamation-triangle"
+        : type === "success"
+        ? "check"
+        : "info-circle"
+    }"></i> ${message}`;
+    log.appendChild(entry);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  // Modal functions
+  function showModal() {
+    document.getElementById("progress-modal").style.display = "block";
+  }
+
+  function hideModal() {
+    document.getElementById("progress-modal").style.display = "none";
+  }
+
+  // Single file conversion
+  document
+    .getElementById("single-file-form")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const fileInput = document.getElementById("json-file");
+      const file = fileInput.files[0];
+
+      if (!file) {
+        logMessage("Please select a JSON file.", "error");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("json_file", file);
+
+      showModal();
+      document.getElementById(
+        "progress-text"
+      ).textContent = `Converting ${file.name}...`;
+      logMessage(`Starting conversion for: ${file.name}`);
+
+      try {
+        const response = await fetch('{% url "converter:convert_file" %}', {
+          method: "POST",
+          body: formData,
+          headers: {
+            "X-CSRFToken": csrftoken,
+          },
+        });
+
+        hideModal();
+
+        if (response.ok) {
+          const blob = await response.blob();
+          const filename =
+            response.headers
+              .get("Content-Disposition")
+              ?.split("filename=")[1]
+              ?.replace(/"/g, "") || "converted.json";
+
+          // Download file
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          a.click();
+          window.URL.revokeObjectURL(url);
+
+          logMessage(`✓ File converted successfully: ${filename}`, "success");
+          fileInput.value = "";
+        } else {
+          const errorData = await response.json();
+          logMessage(`Error: ${errorData.error}`, "error");
+        }
+      } catch (error) {
+        hideModal();
+        logMessage(`Connection error: ${error.message}`, "error");
+      }
+    });
+
+  // ZIP file conversion
+  document
+    .getElementById("zip-file-form")
+    .addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const fileInput = document.getElementById("zip-file");
+      const file = fileInput.files[0];
+
+      if (!file) {
+        logMessage("Please select a ZIP file.", "error");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("zip_file", file);
+
+      showModal();
+      document.getElementById(
+        "progress-text"
+      ).textContent = `Processing ${file.name}...`;
+      logMessage(`Starting batch conversion for: ${file.name}`);
+
+      try {
+        const response = await fetch('{% url "converter:convert_zip" %}', {
+          method: "POST",
+          body: formData,
+          headers: {
+            "X-CSRFToken": csrftoken,
+          },
+        });
+
+        hideModal();
+
+        if (response.ok) {
+          const blob = await response.blob();
+          const filename =
+            response.headers
+              .get("Content-Disposition")
+              ?.split("filename=")[1]
+              ?.replace(/"/g, "") || "converted.zip";
+
+          // Download file
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = filename;
+          a.click();
+          window.URL.revokeObjectURL(url);
+
+          logMessage(
+            `✓ ZIP files converted successfully: ${filename}`,
+            "success"
+          );
+          fileInput.value = "";
+        } else {
+          const errorData = await response.json();
+          logMessage(`Error: ${errorData.error}`, "error");
+        }
+      } catch (error) {
+        hideModal();
+        logMessage(`Connection error: ${error.message}`, "error");
+      }
+    });
+
+  // Text conversion
+  document
+    .getElementById("convert-text-btn")
+    .addEventListener("click", async function () {
+      const input = document.getElementById("json-input").value.trim();
+      const output = document.getElementById("json-output");
+      const downloadBtn = document.getElementById("download-text-btn");
+
+      if (!input) {
+        logMessage("Please enter a JSON to convert.", "error");
+        return;
+      }
+
+      showModal();
+      document.getElementById("progress-text").textContent =
+        "Converting JSON text...";
+      logMessage("Starting JSON text conversion...");
+
+      try {
+        const response = await fetch('{% url "converter:convert_text" %}', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrftoken,
+          },
+          body: JSON.stringify({ json_text: input }),
+        });
+
+        hideModal();
+
+        const data = await response.json();
+
+        if (response.ok) {
+          output.value = data.converted_json;
+          downloadBtn.style.display = "block";
+          logMessage("✓ JSON text converted successfully", "success");
+        } else {
+          logMessage(`Error: ${data.error}`, "error");
+          output.value = "";
+          downloadBtn.style.display = "none";
+        }
+      } catch (error) {
+        hideModal();
+        logMessage(`Connection error: ${error.message}`, "error");
+      }
+    });
+
+  // Clear text
+  document
+    .getElementById("clear-text-btn")
+    .addEventListener("click", function () {
+      document.getElementById("json-input").value = "";
+      document.getElementById("json-output").value = "";
+      document.getElementById("download-text-btn").style.display = "none";
+      logMessage("Text fields cleared.");
+    });
+
+  // Download converted text
+  document
+    .getElementById("download-text-btn")
+    .addEventListener("click", function () {
+      const content = document.getElementById("json-output").value;
+      const blob = new Blob([content], { type: "application/json" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "converted_new.json";
+      a.click();
+      window.URL.revokeObjectURL(url);
+      logMessage("✓ JSON file downloaded", "success");
+    });
+
+  // File input labels update
+  document.getElementById("json-file").addEventListener("change", function () {
+    const label = document.querySelector('label[for="json-file"]');
+    if (this.files.length > 0) {
+      label.innerHTML = `<i class="fas fa-file-code"></i> ${this.files[0].name}`;
+    }
+  });
+
+  document.getElementById("zip-file").addEventListener("change", function () {
+    const label = document.querySelector('label[for="zip-file"]');
+    if (this.files.length > 0) {
+      label.innerHTML = `<i class="fas fa-file-archive"></i> ${this.files[0].name}`;
+    }
+  });
+</script>
+{% endblock %}
