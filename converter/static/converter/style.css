@@ -513,6 +513,15 @@ body {
     padding: 2rem;
     text-align: center;
     color: #4a5568;
+} 
+
+.footer-link {
+  color: #715bb9;
+  font-weight: bold;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
 }
 
 /* Responsive design */

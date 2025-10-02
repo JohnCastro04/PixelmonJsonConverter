@@ -1,41 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}JSON Converter - Old → New Format{% endblock %}</title>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'converter/style.css' %}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    {% block title %}JSON Converter - Old → New Format{% endblock %}
+  </title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'converter/style.css' %}" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
 </head>
+
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <h1 class="nav-title">
-                <i class="fas fa-exchange-alt"></i>
-                Pixelmon JSON Converter
-            </h1>
-            <ul class="nav-menu">
-                <li><a href="{% url 'converter:index' %}" class="nav-link">Home</a></li>
-                <li><a href="{% url 'converter:help' %}" class="nav-link">Help</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <main class="main-content">
-        {% block content %}
-        {% endblock %}
-    </main>
-
-    <footer class="footer">
-    <div class="footer-content">
-        <p>Made by <a href="https://discord.gg/TU_ENLACE_PATRAT" target="_blank">Patrat Squad</a> based on <strong>Kikamom's App</strong>. 
-        Join our servers: <a href="https://discord.gg/TU_ENLACE_BAKERY" target="_blank">Bakery</a> and <a href="https://discord.gg/TU_ENLACE_PATRAT" target="_blank">Patrat Squad</a>.</p>
+  <nav class="navbar">
+    <div class="nav-container">
+      <h1 class="nav-title">
+        <i class="fas fa-exchange-alt"></i>
+        Pixelmon JSON Converter
+      </h1>
+      <ul class="nav-menu">
+        <li>
+          <a href="{% url 'converter:index' %}" class="nav-link">Home</a>
+        </li>
+        <li>
+          <a href="{% url 'converter:help' %}" class="nav-link">Help</a>
+        </li>
+      </ul>
     </div>
-</footer>
+  </nav>
 
+  <main class="main-content">{% block content %} {% endblock %}</main>
 
-    <script src="{% static 'converter/main.js' %}"></script>
-    {% block extra_js %}{% endblock %}
+  <footer class="footer">
+    <div class="footer-content">
+      <p>
+        Made by <strong>Patrat Squad</strong> based on
+        <strong>Kikamom's App</strong>. <br />
+        Join our servers:
+        <a href="https://discord.gg/FyzCXP6ezN" target="_blank" class="footer-link">Mom’s Texture Bakery</a>
+        and
+        <a href="https://discord.gg/M8wXtrppun" target="_blank" class="footer-link">Patrat Squad</a>.
+      </p>
+    </div>
+  </footer>
+
+  <script src="{% static 'converter/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
 </body>
+
 </html>
