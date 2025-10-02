@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}JSON Converter - Old → New Format{% endblock %}</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'converter/css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'converter/style.css' %}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -28,12 +28,14 @@
     </main>
 
     <footer class="footer">
-        <div class="footer-content">
-            <p>&copy; 2025 JSON Converter. Convert JSON files from OLD to NEW format with strict key ordering, predicate wrappers, palette tags, and default growth data.</p>
-        </div>
-    </footer>
+    <div class="footer-content">
+        <p>Made by <a href="https://discord.gg/TU_ENLACE_PATRAT" target="_blank">Patrat Squad</a> based on <strong>Kikamom's App</strong>. 
+        Join our servers: <a href="https://discord.gg/TU_ENLACE_BAKERY" target="_blank">Bakery</a> and <a href="https://discord.gg/TU_ENLACE_PATRAT" target="_blank">Patrat Squad</a>.</p>
+    </div>
+</footer>
 
-    <script src="{% static 'converter/js/main.js' %}"></script>
+
+    <script src="{% static 'converter/main.js' %}"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
